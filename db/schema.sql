@@ -99,3 +99,14 @@ CREATE INDEX idx_nomenclature_fk ON nomenclature (gost_id, diameter_id, length_i
 --Функциональный уникальный индекс для дедупликации с нормализацией исторического текста (смотри ADR-001)
 CREATE UNIQUE INDEX idx_nomenclature_normalized_name 
 ON nomenclature (LOWER(REPLACE(generated_name, 'x', '×')));
+
+--6. Таблица для сохранения неотправленных сообщений по ADR-003
+CREATE TABLE failed_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(), --расширение с uuidv7() бы юзнуть лучше, но с нашим объёмом данных фрагментация диска некритична
+    topic VARCHAR(255) NOT NULL,
+    event_key VARCHAR(255) NOT NULL,
+    payload JSONB NOT NULL,
+    error_message TEXT NOT NULL,
+    retry_count INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
