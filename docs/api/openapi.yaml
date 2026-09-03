@@ -1,7 +1,7 @@
-openapi: 3.0.3 # выбрал самую распространённую версию
+openapi: 3.0.3
 info:
   title: NSI Nomenclature Core API
-  version: 1.0.0 # номер версии просто чтоб красивый был
+  version: 1.0.0
   description: |
     REST API микросервиса управления нормативно-справочной информацией.
     Обеспечивает динамическую фильтрацию параметров и сборку
@@ -48,13 +48,13 @@ paths:
           required: true
           schema:
             type: integer
-          example: 1 # для сваггера
+          example: 1
         - name: diameter_id
           in: query
           required: true
           schema:
             type: integer
-          example: 4 # для сваггера
+          example: 4
       responses:
         '200':
           description: Массив допустимых длин
@@ -79,7 +79,7 @@ paths:
           required: true
           schema:
             type: integer
-          example: 1 # для сваггера
+          example: 1
       responses:
         '200':
           description: Список совместимых защитных покрытий
@@ -138,21 +138,21 @@ components:
       properties:
         id:
           type: integer
-          example: 1 # для сваггера
+          example: 1
         code:
           type: string
-          example: "ГОСТ 7798-70" # для сваггера
+          example: "ГОСТ 7798-70"
         name:
           type: string
-          example: "Болты с шестигранной головкой класса точности В" # для сваггера
+          example: "Болты с шестигранной головкой класса точности В"
         accuracy_class:
           type: string
           enum: ["A", "B", "C"]
-          example: "B" # для сваггера
+          example: "B"
         tolerance:
           type: string
           nullable: true
-          example: "-6g" # для сваггера
+          example: "-6g"
 
     LengthItem:
       type: object
@@ -163,14 +163,14 @@ components:
       properties:
         length_id:
           type: integer
-          example: 12 # для сваггера
+          example: 12
         value:
           type: number
           format: float
-          example: 60.0 # для сваггера
+          example: 60.0
         is_recommended:
           type: boolean
-          example: true # для сваггера
+          example: true
 
     CoatingItem:
       type: object
@@ -182,16 +182,16 @@ components:
       properties:
         id:
           type: integer
-          example: 1 # для сваггера
+          example: 1
         code:
           type: string
-          example: "01" # для сваггера
+          example: "01"
         name:
           type: string
-          example: "Цинковое с хроматированием" # для сваггера
+          example: "Цинковое с хроматированием"
         requires_thickness:
           type: boolean
-          example: true # для сваггера
+          example: true
 
     GenerateNomenclatureRequest:
       type: object
@@ -206,41 +206,41 @@ components:
       properties:
         gost_id:
           type: integer
-          example: 1 # для сваггера
+          example: 1
         diameter_id:
           type: integer
-          example: 4 # для сваггера
+          example: 4
         length_id:
           type: integer
-          example: 12 # для сваггера
+          example: 12
         material_grade_id:
           type: integer
-          example: 8 # для сваггера
+          example: 8
         execution:
           type: integer
           enum: [1, 2, 3, 4]
-          example: 2 # для сваггера
+          example: 2
         thread_step:
           type: number
           format: float
-          example: 1.25 # для сваггера
+          example: 1.25
         thread_direction:
           type: string
           enum: ["Правая", "Левая"]
-          example: "Левая" # для сваггера
+          example: "Левая"
         s_size:
           type: number
           format: float
           nullable: true
-          example: 18.0 # для сваггера
+          example: 18.0
         coating_id:
           type: integer
           nullable: true
-          example: 1 # для сваггера
+          example: 1
         coating_thickness:
           type: integer
           nullable: true
-          example: 15 # для сваггера
+          example: 15
 
     NomenclatureResponse:
       type: object
@@ -252,14 +252,14 @@ components:
         id:
           type: string
           format: uuid
-          example: "550e8400-e29b-41d4-a716-446655440000" # для сваггера
+          example: "550e8400-e29b-41d4-a716-446655440000"
         generated_name:
           type: string
-          example: "Болт 2М12×1,25-LH-6g×60.109.40Х.0115 (S18) ГОСТ 7798-70" # для сваггера
+          example: "Болт 2М12×1,25-LH-6g×60.109.40Х.0115 (S18) ГОСТ 7798-70"
         created_at:
           type: string
           format: date-time
-          example: "2026-07-09T21:30:00+03:00" # для сваггера
+          example: "2026-07-09T21:30:00+03:00"
 
     ConflictResponse:
       type: object
@@ -271,17 +271,17 @@ components:
       properties:
         error_code:
           type: string
-          example: "NOMENCLATURE_ALREADY_EXISTS" # для сваггера
+          example: "NOMENCLATURE_ALREADY_EXISTS"
         message:
           type: string
-          example: "Номенклатурная позиция уже существует" # для сваггера
+          example: "Номенклатурная позиция уже существует"
         duplicate_id:
           type: string
           format: uuid
-          example: "550e8400-e29b-41d4-a716-446655440000" # для сваггера
+          example: "550e8400-e29b-41d4-a716-446655440000"
         duplicate_name:
           type: string
-          example: "Болт 2М12×1,25-LH-6g×60.109.40Х.0115 (S18) ГОСТ 7798-70" # для сваггера
+          example: "Болт 2М12×1,25-LH-6g×60.109.40Х.0115 (S18) ГОСТ 7798-70"
 
     ErrorResponse:
       type: object
@@ -291,7 +291,7 @@ components:
       properties:
         error_code:
           type: string
-          example: "INVALID_COMBINATION" # для сваггера
+          example: "INVALID_COMBINATION"
         message:
           type: string
-          example: "Длина 60 мм не предусмотрена для диаметра 6 мм согласно ГОСТ 7798-70" # для сваггера
+          example: "Длина 60 мм не предусмотрена для диаметра 6 мм согласно ГОСТ 7798-70"
