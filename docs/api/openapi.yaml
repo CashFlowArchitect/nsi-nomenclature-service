@@ -1,1 +1,297 @@
+openapi: 3.0.3 # выбрал самую распространённую версию
+info:
+  title: NSI Nomenclature Core API
+  version: 1.0.0 # номер версии просто чтоб красивый был
+  description: |
+    REST API микросервиса управления нормативно-справочной информацией.
+    Обеспечивает динамическую фильтрацию параметров и сборку
+    стандартизированных наименований метизов по ГОСТ 1759.0-87.
+servers: # по понятным причинам обезличены
+  - url: https://api.nsi.company.corp/api/v1
+    description: Production Gateway
+  - url: http://localhost:8080/api/v1
+    description: Локальная среда разработки
 
+tags:
+  - name: Parameters
+    description: Получение нормативно-справочных матриц для Мастер-фильтра
+  - name: Nomenclature
+    description: Валидация, дедупликация и генерация номенклатуры
+
+paths:
+  /parameters/standards:
+    get:
+      tags:
+        - Parameters
+      summary: Получение списка активных стандартов ГОСТ
+      operationId: getStandards # так профессиональнее, для удобства разработчиков
+      responses:
+        '200':
+          description: Список стандартов успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StandardItem'
+
+  /parameters/lengths:
+    get:
+      tags:
+        - Parameters
+      summary: Получение допустимых длин для связки ГОСТ+Диаметр
+      description: Считывает данные из кэша Redis или выполняет обращение к SQL.
+      operationId: getLengths
+      parameters:
+        - name: gost_id
+          in: query
+          required: true
+          schema:
+            type: integer
+          example: 1 # для сваггера
+        - name: diameter_id
+          in: query
+          required: true
+          schema:
+            type: integer
+          example: 4 # для сваггера
+      responses:
+        '200':
+          description: Массив допустимых длин
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LengthItem'
+        '400':
+          $ref: '#/components/schemas/ErrorResponse'
+
+  /parameters/coatings:
+    get:
+      tags:
+        - Parameters
+      summary: Получение списка допустимых покрытий по типу металла
+      operationId: getCoatings
+      parameters:
+        - name: metal_type_id
+          in: query
+          required: true
+          schema:
+            type: integer
+          example: 1 # для сваггера
+      responses:
+        '200':
+          description: Список совместимых защитных покрытий
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CoatingItem'
+
+  /nomenclature/generate:
+    post:
+      tags:
+        - Nomenclature
+      summary: Валидация параметров, сборка наименования и сохранение
+      description: |
+        Выполняет валидацию по правилам ГОСТ, собирает эталонное обозначение,
+        проверяет базу на дубликаты, фиксирует транзакцию в SQL
+        и публикует событие в Apache Kafka (топик mdm.nomenclature.events).
+      operationId: generateNomenclature
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateNomenclatureRequest'
+      responses:
+        '201':
+          description: Мастер-запись успешно создана и опубликована в шину
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NomenclatureResponse'
+        '400':
+          description: Ошибка валидации входных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Конфликт уникальности. Номенклатурная позиция уже существует.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+
+components:
+  schemas:
+    StandardItem:
+      type: object
+      required:
+        - id
+        - code
+        - name
+        - accuracy_class
+      properties:
+        id:
+          type: integer
+          example: 1 # для сваггера
+        code:
+          type: string
+          example: "ГОСТ 7798-70" # для сваггера
+        name:
+          type: string
+          example: "Болты с шестигранной головкой класса точности В" # для сваггера
+        accuracy_class:
+          type: string
+          enum: ["A", "B", "C"]
+          example: "B" # для сваггера
+        tolerance:
+          type: string
+          nullable: true
+          example: "-6g" # для сваггера
+
+    LengthItem:
+      type: object
+      required:
+        - length_id
+        - value
+        - is_recommended
+      properties:
+        length_id:
+          type: integer
+          example: 12 # для сваггера
+        value:
+          type: number
+          format: float
+          example: 60.0 # для сваггера
+        is_recommended:
+          type: boolean
+          example: true # для сваггера
+
+    CoatingItem:
+      type: object
+      required:
+        - id
+        - code
+        - name
+        - requires_thickness
+      properties:
+        id:
+          type: integer
+          example: 1 # для сваггера
+        code:
+          type: string
+          example: "01" # для сваггера
+        name:
+          type: string
+          example: "Цинковое с хроматированием" # для сваггера
+        requires_thickness:
+          type: boolean
+          example: true # для сваггера
+
+    GenerateNomenclatureRequest:
+      type: object
+      required:
+        - gost_id
+        - diameter_id
+        - length_id
+        - material_grade_id
+        - execution
+        - thread_step
+        - thread_direction
+      properties:
+        gost_id:
+          type: integer
+          example: 1 # для сваггера
+        diameter_id:
+          type: integer
+          example: 4 # для сваггера
+        length_id:
+          type: integer
+          example: 12 # для сваггера
+        material_grade_id:
+          type: integer
+          example: 8 # для сваггера
+        execution:
+          type: integer
+          enum: [1, 2, 3, 4]
+          example: 2 # для сваггера
+        thread_step:
+          type: number
+          format: float
+          example: 1.25 # для сваггера
+        thread_direction:
+          type: string
+          enum: ["Правая", "Левая"]
+          example: "Левая" # для сваггера
+        s_size:
+          type: number
+          format: float
+          nullable: true
+          example: 18.0 # для сваггера
+        coating_id:
+          type: integer
+          nullable: true
+          example: 1 # для сваггера
+        coating_thickness:
+          type: integer
+          nullable: true
+          example: 15 # для сваггера
+
+    NomenclatureResponse:
+      type: object
+      required:
+        - id
+        - generated_name
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000" # для сваггера
+        generated_name:
+          type: string
+          example: "Болт 2М12×1,25-LH-6g×60.109.40Х.0115 (S18) ГОСТ 7798-70" # для сваггера
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-07-09T21:30:00+03:00" # для сваггера
+
+    ConflictResponse:
+      type: object
+      required:
+        - error_code
+        - message
+        - duplicate_id
+        - duplicate_name
+      properties:
+        error_code:
+          type: string
+          example: "NOMENCLATURE_ALREADY_EXISTS" # для сваггера
+        message:
+          type: string
+          example: "Номенклатурная позиция уже существует" # для сваггера
+        duplicate_id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000" # для сваггера
+        duplicate_name:
+          type: string
+          example: "Болт 2М12×1,25-LH-6g×60.109.40Х.0115 (S18) ГОСТ 7798-70" # для сваггера
+
+    ErrorResponse:
+      type: object
+      required:
+        - error_code
+        - message
+      properties:
+        error_code:
+          type: string
+          example: "INVALID_COMBINATION" # для сваггера
+        message:
+          type: string
+          example: "Длина 60 мм не предусмотрена для диаметра 6 мм согласно ГОСТ 7798-70" # для сваггера
