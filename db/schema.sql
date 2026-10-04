@@ -90,7 +90,7 @@ CREATE TABLE nomenclature (
     execution INT NOT NULL DEFAULT 1 CHECK (execution IN (1, 2, 3, 4)),
     thread_step NUMERIC(4, 2) NOT NULL,
     thread_direction VARCHAR(10) NOT NULL DEFAULT 'Правая' CHECK (thread_direction IN ('Правая', 'Левая')),
-    s_size NUMERIC(4, 2) NULL,
+    s_size SMALLINT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
