@@ -29,6 +29,8 @@ CREATE TABLE gost_diameter_param (
     step_fine_1 NUMERIC(4, 2) NULL,
     step_fine_2 NUMERIC(4, 2) NULL,
     has_alternative_s BOOLEAN NOT NULL DEFAULT FALSE,
+    s_size_main SMALLINT NOT NULL,
+    s_size_alt SMALLINT NULL,
     CONSTRAINT uq_gost_diameter UNIQUE (gost_id, diameter_id)
 );
 
