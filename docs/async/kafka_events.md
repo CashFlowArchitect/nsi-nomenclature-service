@@ -69,6 +69,7 @@
         "diameter": { "type": "number", "example": 12.0 },
         "length": { "type": "number", "example": 60.0 },
         "execution": { "type": "integer", "enum": [1, 2, 3, 4], "example": 2 },
+        "deoxidation_type": {"type": ["string", "null"], "enum": ["С", "А", null], "description": "Тип раскисления стали для классов <= 6.8", "example": "А"},
         "thread_step": { "type": "number", "example": 1.25 },
         "thread_direction": { "type": "string", "enum": ["Right", "Left"], "example": "Left" },
         "s_size": { "type": ["number", "null"], "example": 18.0 },
