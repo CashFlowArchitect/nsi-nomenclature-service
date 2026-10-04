@@ -35,6 +35,35 @@ paths:
                 items:
                   $ref: '#/components/schemas/StandardItem'
 
+/parameters/diameters:
+    get:
+      tags:
+        - Parameters
+      summary: Получение допустимых диаметров, шагов резьбы и размеров под ключ
+      operationId: getDiameters
+      parameters:
+        - name: gost_id
+          in: query
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Список допустимых диаметров и параметров резьбы
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DiameterItem'
+        '400':
+          description: Ошибка валидации входных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /parameters/lengths:
     get:
       tags:
@@ -66,6 +95,35 @@ paths:
                   $ref: '#/components/schemas/LengthItem'
         '400':
           $ref: '#/components/schemas/ErrorResponse'
+
+/parameters/materials:
+    get:
+      tags:
+        - Parameters
+      summary: Получение списка классов прочности и совместимых марок стали/сплавов
+      operationId: getMaterials
+      parameters:
+        - name: metal_type_id
+          in: query
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Список доступных классов и марок материалов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MaterialItem'
+        '400':
+          description: Ошибка валидации входных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /parameters/coatings:
     get:
@@ -154,6 +212,47 @@ components:
           nullable: true
           example: "-6g"
 
+DiameterItem:
+      type: object
+      required:
+        - diameter_id
+        - value
+        - step_coarse
+        - has_alternative_s
+        - s_size_main
+      properties:
+        diameter_id:
+          type: integer
+          example: 4
+        value:
+          type: number
+          format: float
+          example: 12.0
+        step_coarse:
+          type: number
+          format: float
+          example: 1.75
+        step_fine_1:
+          type: number
+          format: float
+          nullable: true
+          example: 1.25
+        step_fine_2:
+          type: number
+          format: float
+          nullable: true
+          example: null
+        has_alternative_s:
+          type: boolean
+          example: true
+        s_size_main:
+          type: integer
+          example: 19
+        s_size_alt:
+          type: integer
+          nullable: true
+          example: 18
+
     LengthItem:
       type: object
       required:
@@ -171,6 +270,27 @@ components:
         is_recommended:
           type: boolean
           example: true
+
+MaterialItem:
+      type: object
+      required:
+        - class_id
+        - class_code
+        - grade_id
+        - grade_name
+      properties:
+        class_id:
+          type: integer
+          example: 2
+        class_code:
+          type: string
+          example: "10.9"
+        grade_id:
+          type: integer
+          example: 8
+        grade_name:
+          type: string
+          example: "40Х"
 
     CoatingItem:
       type: object
