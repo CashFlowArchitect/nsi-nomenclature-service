@@ -88,6 +88,7 @@ CREATE TABLE nomenclature (
     coating_id INT NULL REFERENCES coating(id) ON DELETE RESTRICT,
     coating_thickness INT NULL,
     execution INT NOT NULL DEFAULT 1 CHECK (execution IN (1, 2, 3, 4)),
+    deoxidation_type VARCHAR(10) NULL CHECK (deoxidation_type IN ('С', 'А')),
     thread_step NUMERIC(4, 2) NOT NULL,
     thread_direction VARCHAR(10) NOT NULL DEFAULT 'Правая' CHECK (thread_direction IN ('Правая', 'Левая')),
     s_size SMALLINT NULL,
