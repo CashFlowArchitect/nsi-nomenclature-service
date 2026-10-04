@@ -93,7 +93,7 @@ erDiagram
         int execution "Исполнение изделия: 1, 2, 3, 4"
         numeric thread_step "Фактический шаг резьбы, мм"
         varchar thread_direction "Направление резьбы: Right, Left"
-        numeric s_size "Фактический размер под ключ, мм (nullable)"
+        smallint s_size "Фактический размер под ключ, мм (nullable)"
         timestamp created_at "Дата и время создания мастер-записи"
     }
 
