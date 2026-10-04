@@ -349,10 +349,9 @@ MaterialItem:
           enum: ["Правая", "Левая"]
           example: "Левая"
         s_size:
-          type: number
-          format: float
+          type: integer
           nullable: true
-          example: 18.0
+          example: 18
         coating_id:
           type: integer
           nullable: true
