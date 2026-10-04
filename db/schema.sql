@@ -113,3 +113,6 @@ CREATE TABLE failed_events (
     retry_count INT NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+--Индекс для фонового cron-процесса досылки неотправленных сообщений
+CREATE INDEX idx_failed_events_retry ON failed_events (retry_count, created_at);
