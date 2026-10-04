@@ -39,6 +39,8 @@ erDiagram
         numeric step_fine_1 "Мелкий шаг 1, мм (nullable)"
         numeric step_fine_2 "Мелкий шаг 2, мм (nullable)"
         boolean has_alternative_s "Признак наличия альт. размера под ключ"
+        smallint s_size_main "Основной размер под ключ, мм"
+        smallint s_size_alt "Альтернативный размер под ключ, мм (nullable)"
     }
 
     GOST_DIAMETER_LENGTH {
