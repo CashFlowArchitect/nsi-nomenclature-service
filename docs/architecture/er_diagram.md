@@ -91,6 +91,7 @@ erDiagram
         int coating_id FK "Ссылка на COATING (nullable)"
         int coating_thickness "Толщина покрытия в мкм (nullable)"
         int execution "Исполнение изделия: 1, 2, 3, 4"
+        varchar deoxidation_type "Тип раскисления: С, А (nullable)"
         numeric thread_step "Фактический шаг резьбы, мм"
         varchar thread_direction "Направление резьбы: Right, Left"
         smallint s_size "Фактический размер под ключ, мм (nullable)"
